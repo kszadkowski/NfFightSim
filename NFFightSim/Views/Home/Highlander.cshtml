@@ -1,0 +1,668 @@
+﻿<style>
+	h4 {
+		font-weight: bolder;
+	}
+
+	.group th {
+		padding: 0 15px 0 0;
+	}
+
+	.group input {
+		width: 80px;
+	}
+
+	.przebieg {
+		 table-layout: fixed;
+	}
+	.przebieg td {
+		border: 1px solid gray;
+	}
+
+	.przebieg .nazwa {
+		width: 250px;
+		background: #87cefa
+	}
+
+	.przebieg .punkt {
+		width: 80px;
+		background: #90ee90
+	}
+
+	.przebieg .dubel {
+		width: 80px;
+		background: #d3d3d3
+	}
+
+	.przebieg .stan {
+		width: 120px;
+		background: #ffdab9
+	}
+
+	.kolejkaHeader {
+		font-size: 18pt;
+		padding-top: 20px;
+	}
+
+	.walki {
+		width: 5000px;
+		border: 1px solid black;
+	}
+
+	.podsumowanieWalki td {
+		padding: 0 0 0 10px;
+	}
+	
+	.podsumowanieWalki th {
+		padding: 0 0 0 10px;
+	}
+
+	.podsumowanieWalki tr.martwy td {
+		background-color: #ff4040
+	}
+
+	#walkaPowtorna,
+	input[type=radio] {
+		margin-right: 10px;
+	}
+
+	.podsumowanie {
+		border: 1px solid green;
+	}
+
+	.zwyciezca {
+		background-color: goldenrod;
+	}
+
+	.walkiContainer {
+		cursor: pointer;
+		background-color: lightgray;
+		border: 1px solid gray;
+		margin-right: 5px;
+		padding: 10px;
+		width: 120px;
+		float: left;
+		display: none;
+	}
+
+	.aktywna {
+		background-color: thistle;
+		border: 2px solid violet;
+	}
+
+	 .heart { position: relative; width: 50px; height: 45px; } 
+	 .heart:before, .heart:after { position: absolute; content: ""; left: 25px; top: 0; width: 25px; 
+								   height: 40px; background: red; -moz-border-radius: 25px 25px 0 0; border-radius: 25px 25px 0 0; 
+								   -webkit-transform: rotate(-45deg); -moz-transform: rotate(-45deg); 
+								   -ms-transform: rotate(-45deg); -o-transform: rotate(-45deg); 
+								   transform: rotate(-45deg); -webkit-transform-origin: 0 100%; -moz-transform-origin: 0 100%; 
+								   -ms-transform-origin: 0 100%; -o-transform-origin: 0 100%; transform-origin: 0 100%; } 
+	 .heart:after { left: 0; -webkit-transform: rotate(45deg); -moz-transform: rotate(45deg); -ms-transform: rotate(45deg); 
+					-o-transform: rotate(45deg); transform: rotate(45deg); -webkit-transform-origin: 100% 100%; 
+					-moz-transform-origin: 100% 100%; -ms-transform-origin: 100% 100%; -o-transform-origin: 100% 100%; transform-origin :100% 100%; }
+</style>
+<label style="width: 200px">Do ilu wygranych starć</label><input type="number" id="wins" value="3"/><br/>
+<label style="width: 200px">Początkowa liczba żyć</label><input type="number" id="life" value="21"/><br/>
+<label style="width: 200px">Średni czas starcia (sek)</label><input type="number" id="czasStarcia" value="30" /><br />
+<input type="checkbox" id="walkaPowtorna" checked="checked" /><label for="walkaPowtorna">można walczyć z tym samym przeciwnikiem</label><br />
+<label>Tryb:</label><br/>
+<input type="radio" name="tryb" id="trybDoOstatniego" value="ostatni" checked="checked" /><label for="trybDoOstatniego">do ostatniego żywego</label><br/>
+<input type="radio" name="tryb" id="trybKolejki" value="kolejka" /><label for="trybKolejki">określona liczba kolejek</label><br/>
+<label style="width: 200px">Liczba kolejek</label><input type="number" id="kolejek" value="7" disabled="disabled"/><br /><br/>
+<input type="button" id="run" value="uruchom symulację"/>
+<img src="~/Content/knights.gif" id="loading" style="display: none" />
+<hr />
+<table style="width: 100%">
+	<tr>
+		<td>
+			<div class="groupContainer" style="display: block">
+				<h4>
+					Grupa 1
+				</h4>
+				<table class="group">
+					<thead><tr><th style="width: 20px">#</th><th style="width: 180px">Zawodnik</th><th>praw. wyg.</th><th>praw. dub.</th></tr></thead>
+					<tr class="zaw"><td>1</td><td class='fighterName'>Rafał Kalus</td><td><input type='number' class='prWyg' value='0.49' /></td><td><input type='number' class='prDub' value='0.24' /></td></tr>
+					<tr class="zaw"><td>2</td><td class='fighterName'>Michał Wiesner</td><td><input type='number' class='prWyg' value='0.47' /></td><td><input type='number' class='prDub' value='0.24' /></td></tr>
+					<tr class="zaw"><td>3</td><td class='fighterName'>Maciej Kwiek</td><td><input type='number' class='prWyg' value='0.47' /></td><td><input type='number' class='prDub' value='0.33' /></td></tr>
+					<tr class="zaw"><td>4</td><td class='fighterName'>Paweł Cieleń</td><td><input type='number' class='prWyg' value='0.33' /></td><td><input type='number' class='prDub' value='0.29' /></td></tr>
+					<tr class="zaw"><td>5</td><td class='fighterName'>Konrad Świderek</td><td><input type='number' class='prWyg' value='0.29' /></td><td><input type='number' class='prDub' value='0.24' /></td></tr>
+					<tr class="zaw"><td>6</td><td class='fighterName'>Jacek Łabanowski</td><td><input type='number' class='prWyg' value='0.29' /></td><td><input type='number' class='prDub' value='0.37' /></td></tr>
+					<tr class="zaw"><td>7</td><td class='fighterName'>Paweł Mamełka</td><td><input type='number' class='prWyg' value='0.20' /></td><td><input type='number' class='prDub' value='0.35' /></td></tr>
+					<tr class="zaw"><td>8</td><td class='fighterName'>Magdalena Sędkiewicz</td><td><input type='number' class='prWyg' value='0.20' /></td><td><input type='number' class='prDub' value='0.47' /></td></tr>
+				</table>
+			</div>
+		</td>
+		<td>
+			<div class="groupContainer" style="display: block">
+				<h4>
+					Grupa 2
+				</h4>
+				<table class="group">
+					<thead><tr><th style="width: 20px">#</th><th style="width: 180px">Zawodnik</th><th>praw. wyg.</th><th>praw. dub.</th></tr></thead>
+					<tr class="zaw"><td>1</td><td class='fighterName'>Łukasz Dąbrowski</td><td><input type='number' class='prWyg' value='0.49' /></td><td><input type='number' class='prDub' value='0.24' /></td></tr>
+					<tr class="zaw"><td>2</td><td class='fighterName'>Marek Helman</td><td><input type='number' class='prWyg' value='0.47' /></td><td><input type='number' class='prDub' value='0.24' /></td></tr>
+					<tr class="zaw"><td>3</td><td class='fighterName'>Michał Grabowski</td><td><input type='number' class='prWyg' value='0.47' /></td><td><input type='number' class='prDub' value='0.33' /></td></tr>
+					<tr class="zaw"><td>4</td><td class='fighterName'>Kamil Siatkowski</td><td><input type='number' class='prWyg' value='0.33' /></td><td><input type='number' class='prDub' value='0.29' /></td></tr>
+					<tr class="zaw"><td>5</td><td class='fighterName'>Daniel Karkotka</td><td><input type='number' class='prWyg' value='0.29' /></td><td><input type='number' class='prDub' value='0.24' /></td></tr>
+					<tr class="zaw"><td>6</td><td class='fighterName'>Krzysztof Kruczyński</td><td><input type='number' class='prWyg' value='0.29' /></td><td><input type='number' class='prDub' value='0.37' /></td></tr>
+					<tr class="zaw"><td>7</td><td class='fighterName'>Andrzej Kurczyński</td><td><input type='number' class='prWyg' value='0.20' /></td><td><input type='number' class='prDub' value='0.35' /></td></tr>
+					<tr class="zaw"><td>8</td><td class='fighterName'>Piotr Mikołajczak</td><td><input type='number' class='prWyg' value='0.20' /></td><td><input type='number' class='prDub' value='0.47' /></td></tr>
+				</table>
+			</div>
+		</td>
+		<td>
+			<div class="groupContainer" style="display: block">
+				<h4>
+					Grupa 3
+				</h4>
+				<table class="group">
+					<thead><tr><th style="width: 20px">#</th><th style="width: 180px">Zawodnik</th><th>praw. wyg.</th><th>praw. dub.</th></tr></thead>
+					<tr class="zaw"><td>1</td><td class='fighterName'>Antoni Olbrychski</td><td><input type='number' class='prWyg' value='0.49' /></td><td><input type='number' class='prDub' value='0.24' /></td></tr>
+					<tr class="zaw"><td>2</td><td class='fighterName'>Maciej Talaga</td><td><input type='number' class='prWyg' value='0.47' /></td><td><input type='number' class='prDub' value='0.24' /></td></tr>
+					<tr class="zaw"><td>3</td><td class='fighterName'>Łukasz Kwiatek</td><td><input type='number' class='prWyg' value='0.47' /></td><td><input type='number' class='prDub' value='0.33' /></td></tr>
+					<tr class="zaw"><td>4</td><td class='fighterName'>Rafał Kramek</td><td><input type='number' class='prWyg' value='0.33' /></td><td><input type='number' class='prDub' value='0.29' /></td></tr>
+					<tr class="zaw"><td>5</td><td class='fighterName'>Marcin Ewiak</td><td><input type='number' class='prWyg' value='0.29' /></td><td><input type='number' class='prDub' value='0.24' /></td></tr>
+					<tr class="zaw"><td>6</td><td class='fighterName'>Bas Doeksen</td><td><input type='number' class='prWyg' value='0.29' /></td><td><input type='number' class='prDub' value='0.37' /></td></tr>
+					<tr class="zaw"><td>7</td><td class='fighterName'>Kamil Piotrowski</td><td><input type='number' class='prWyg' value='0.20' /></td><td><input type='number' class='prDub' value='0.35' /></td></tr>
+					<tr class="zaw"><td>8</td><td class='fighterName'>Paweł Wójciak</td><td><input type='number' class='prWyg' value='0.20' /></td><td><input type='number' class='prDub' value='0.47' /></td></tr>
+				</table>
+			</div>
+		</td>
+		<td>
+			<div class="groupContainer" style="display: block">
+				<h4>
+					Grupa 4
+				</h4>
+				<table class="group">
+					<thead><tr><th style="width: 20px">#</th><th style="width: 180px">Zawodnik</th><th>praw. wyg.</th><th>praw. dub.</th></tr></thead>
+					<tr class="zaw"><td>1</td><td class='fighterName'>Filip Fica</td><td><input type='number' class='prWyg' value='0.49' /></td><td><input type='number' class='prDub' value='0.24' /></td></tr>
+					<tr class="zaw"><td>2</td><td class='fighterName'>Paweł Białasiewicz</td><td><input type='number' class='prWyg' value='0.47' /></td><td><input type='number' class='prDub' value='0.24' /></td></tr>
+					<tr class="zaw"><td>3</td><td class='fighterName'>Karol Zakrzewski</td><td><input type='number' class='prWyg' value='0.47' /></td><td><input type='number' class='prDub' value='0.33' /></td></tr>
+					<tr class="zaw"><td>4</td><td class='fighterName'>Jakub Marcickiewicz</td><td><input type='number' class='prWyg' value='0.33' /></td><td><input type='number' class='prDub' value='0.29' /></td></tr>
+					<tr class="zaw"><td>5</td><td class='fighterName'>Jarosław Kokot</td><td><input type='number' class='prWyg' value='0.29' /></td><td><input type='number' class='prDub' value='0.24' /></td></tr>
+					<tr class="zaw"><td>6</td><td class='fighterName'>Aleksander Dynarek</td><td><input type='number' class='prWyg' value='0.29' /></td><td><input type='number' class='prDub' value='0.37' /></td></tr>
+					<tr class="zaw"><td>7</td><td class='fighterName'>Sebastian Kiszka</td><td><input type='number' class='prWyg' value='0.20' /></td><td><input type='number' class='prDub' value='0.35' /></td></tr>
+					<tr class="zaw"><td>8</td><td class='fighterName'>Piotr Grygiel</td><td><input type='number' class='prWyg' value='0.20' /></td><td><input type='number' class='prDub' value='0.47' /></td></tr>
+				</table>
+			</div>
+		</td>
+	</tr>
+</table>
+<hr />
+<table style="margin-bottom: 10px">
+	<tr>
+		<td><div class="podsumowanie"></div></td>
+		<td><div class="podsumowanie"></div></td>
+		<td><div class="podsumowanie"></div></td>
+		<td><div class="podsumowanie"></div></td>
+	</tr>
+</table>
+<div class="walkiContainer aktywna" grupa="0">Walki grupy 1</div>
+<div class="walkiContainer" grupa="1">Walki grupy 2</div>
+<div class="walkiContainer" grupa="2">Walki grupy 3</div>
+<div class="walkiContainer" grupa="3">Walki grupy 3</div>
+<div style="clear: both"></div>
+<div class="walki" style="display: block"></div>
+<div class="walki" style="display: none"></div>
+<div class="walki" style="display: none"></div>
+<div class="walki" style="display: none"></div>
+<script>
+	$(".body-content").css("max-width", "5000px");
+	//console.log = function () { };
+	var zawodnicy = new Array();
+	var zycNaStart = $("#life").val();
+	var limitWyg = $("#wins").val();
+	var limitKolejek = $("#kolejek").val();
+	var sumaStarc = 0;
+	var sumaStarcWGrupie = 0;
+	var tryb = null;
+	var walkaPowtorna = null;
+	var rozgrywanaGrupa = null;
+	var liczbaKolejek = 0;
+	$(function () {
+		//console.log("loading");
+		$("input[name='tryb']").change(function () {
+			tryb = $('input[name=tryb]:checked').val();
+			if (tryb == "ostatni") {
+				$("#kolejek").prop('disabled', true);
+			} else {
+				$("#kolejek").prop('disabled', false);
+			}
+		});
+
+		$("#run").on("click", function () {
+
+			$(".walkiContainer").hide();
+			$(".walki").hide();
+			$("#loading").show();
+			setTimeout(function () {
+				rozegrajGrupe(0);
+				rozegrajGrupe(1);
+				rozegrajGrupe(2);
+				rozegrajGrupe(3);
+
+				wylonZwyciezcow();
+			}, 0);
+
+			$(".walkiContainer").show();
+			$(".walki").eq(0).show();
+
+			setTimeout(function () {
+				$("#loading").hide();
+			}, 3000);
+		});
+
+		$(".walkiContainer").on("click", function () {
+			var el = $(this);
+			var grupa = el.attr("grupa");
+			$(".aktywna").removeClass("aktywna");
+			el.addClass("aktywna");
+			$(".walki").hide();
+			$(".walki").eq(grupa).show();
+		});
+	});
+
+	var znajdzZawodnika = function (idZawodnika) {
+		for (var j = 0; j < zawodnicy.length; j++) {
+			if (zawodnicy[j].id == idZawodnika) {
+				return zawodnicy[j];
+			}
+		}
+
+		throw "nie znaleziono zawodnika";
+	};
+	var walkiWszystkie = new Array();
+	var walkiGrupy = new Array();
+
+	var wylonZwyciezcow = function () {
+		var podEl = $(".podsumowanieWalki");
+		var zywi = podEl.find(".zwyciezca");
+		var ileZywych = zywi.length;
+		//console.log("ile zywych", ileZywych);
+		var pozostali = podEl.find(".nazwaOst").filter(":not(.zwyciezca)");
+		//console.log("pozostali", pozostali);
+		pozostali.sort(function (e1, e2) {
+			var z1 = $(e1);
+			var z2 = $(e2);
+			var z1_punkty = parseInt(z1.attr("punkty"));
+			var z1_duble = parseInt(z1.attr("duble"));
+			var z2_punkty = parseInt(z2.attr("punkty"));
+			var z2_duble = parseInt(z2.attr("duble"));
+
+			var z1_pktDub = z1_punkty - z1_duble;
+			var z2_pktDub = z2_punkty - z2_duble;
+
+			var res = 0;
+			if (z1_pktDub > z2_pktDub) {
+				res = -1;
+			} else if (z1_pktDub < z2_pktDub) {
+				res = 1;
+			} else {
+				if (z1_duble > z2_duble) {
+					res = 1;
+				} else if (z1_duble < z2_duble) {
+					res = -1;
+				} else {
+					res = 0;
+				}
+			}
+
+		//	console.log("porownanie", res,  z1, z2, z1_punkty, z2_punkty, z1_duble, z2_duble);
+
+			return res;
+		});
+		var end = (8 - ileZywych);
+		for (var i = 0; i < end; i++) {
+		//	console.log("poz", i, pozostali.eq(i));
+			pozostali.eq(i).css("background-color", "pink");
+		}
+
+		var ost = $(pozostali.eq(end - 1));
+		var przedost = $(pozostali.eq(end));
+
+		var o_punkty = parseInt(ost.attr("punkty"));
+		var o_duble = parseInt(ost.attr("duble"));
+		var po_punkty = parseInt(przedost.attr("punkty"));
+		var po_duble = parseInt(przedost.attr("duble"));
+
+		if (o_punkty == po_punkty && o_duble == po_duble) {
+			alert("nie można ustalić finałowej ósemki, potrzebna dogrywka");
+		}
+	};
+
+	var rozegrajGrupe = function (numerGrupy) {
+		rozgrywanaGrupa = numerGrupy;
+		walkiGrupy = new Array();
+		walkiWszystkie = new Array();
+		liczbaKolejek = 0;
+		zawodnicy = new Array();
+
+		sumaStarcWGrupie = 0;
+		
+		walkaPowtorna = $("#walkaPowtorna").is(":checked");
+
+		zycNaStart = $("#life").val();
+		limitWyg = $("#wins").val();
+		limitKolejek = $("#kolejek").val();
+		var $groupTable = $(".group").eq(numerGrupy);
+		$groupTable.find("tr.zaw")
+			.each(function (index, el) {
+				//console.log("each", index, el, this);
+				var $el = $(el);
+				var zaw = {
+					id: index,
+					nazwa: $el.find(".fighterName").text(),
+					zycie: parseInt(zycNaStart),
+					prWyg: parseFloat($el.find(".prWyg").val()),
+					prDub: parseFloat($el.find(".prDub").val()),
+					punkty: 0,
+					duble: 0,
+					przeczekane: 0,
+					starcia: 0
+				};
+				zawodnicy.push(zaw);
+			});
+
+		$(".walki").eq(rozgrywanaGrupa).empty();
+		if (tryb === "kolejka") {
+			for (var i = 0; i < limitKolejek; i++) {
+				rozegrajKolejke(i);
+			}
+		} else {
+			var i = 0;
+			while (policzZywych() > 1 && i < 50) {
+				rozegrajKolejke(i++);
+			}
+		}
+
+		pokazPodsumowanie();
+	};
+
+	var policzZywych = function () {
+		var zywi = 0;
+		for (var i = 0; i < zawodnicy.length; i++) {
+			if (zawodnicy[i].zycie > 0) {
+				zywi++;
+			}
+		}
+
+		return zywi;
+	};
+
+	var rozegrajKolejke = function (numKolejki) {
+		liczbaKolejek++;
+		var $walkiCont = $(".walki").eq(rozgrywanaGrupa);
+		$walkiCont.append($("<label class='kolejkaHeader'>Kolejka " + (numKolejki + 1)+ "</label>"));
+		var walkiKolejki = new Array();
+		var czyWalczy = function(idZawodnika) {
+			var walczy = false;
+			for (var x = 0; x < walkiKolejki.length; x++) {
+				if (walkiKolejki[x].zaw1 == idZawodnika || walkiKolejki[x].zaw2 == idZawodnika) {
+					walczy = true;
+					break;
+				}
+			}
+
+			return walczy;
+		};
+
+		var czyWalczyliWczesniej = function(zaw1, zaw2) {
+			for (var i = 0; i < walkiGrupy.length; i++) {
+				var w = walkiGrupy[i];
+				if (w.zaw1 == zaw1 && w.zaw2 == zaw2 || w.zaw1 == zaw2 && w.zaw2 == zaw1) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		var znajdzPrzeciwnika = function (idZawodnika, powtorkiDozwolone) {
+			var przeciwnik = null;
+			for (var j = 7; j >= 0; j--) { 
+				var zawodnik = zawodnicy[j];
+				if (zawodnik.id != idZawodnika && zawodnik.zycie > 0 && czyWalczy(zawodnik.id) === false &&
+					(czyWalczyliWczesniej(idZawodnika, zawodnik.id) === false || powtorkiDozwolone)) {
+					przeciwnik = zawodnik;
+					break;
+				}
+			}
+
+			return przeciwnik;
+		};
+
+		var podsumowanieKolejki = function() {
+			var pods = $("<table class='podsumowanieWalki'><tr><th>zawodnik</th><th>życia</th><th>punkty</th></table>");
+			for (var i = 0; i < zawodnicy.length; i++) {
+				var row = $("<tr><td class='nazwa'>" + zawodnicy[i].nazwa + "</td><td class='zycie'>" + zawodnicy[i].zycie + "</td><td class='punkty'>" + zawodnicy[i].punkty + "</td></tr>");
+
+				if (zawodnicy[i].zycie <= 0) {
+					row.addClass("martwy");
+				}
+				pods.append(row);
+			}
+
+			$walkiCont.append(pods);
+		};
+
+		var random = new Random(Random.engines.mt19937().autoSeed());
+		var walka = function (daneWalki, numWalki) {
+			$walkiCont.append($("<br/><label class='walkaHeader'>Walka " + numWalki + "</label>"));
+
+			var zaw1 = znajdzZawodnika(daneWalki.zaw1);
+			var zaw2 = znajdzZawodnika(daneWalki.zaw2);
+			zaw1.przeczekane = zaw2.przeczekane = 0;
+			//console.log("walka!", zaw1, zaw2);
+			var roznicaSkilla = Math.abs(zaw1.prWyg - zaw2.prWyg);
+			var wspolRoznicySkilla = 1 - roznicaSkilla;
+			//console.log("wsp skilla", wspolRoznicySkilla);
+			var prawDubla = ((zaw1.prDub + zaw2.prDub) / 2) * 100;
+			//console.log("dub", prawDubla);
+			prawDubla = prawDubla * wspolRoznicySkilla;
+			//console.log("dub2", prawDubla);
+			var prawWyg1 = (zaw1.prWyg * 100) / (zaw1.prWyg + zaw2.prWyg);
+			//console.log("prawWyg1", prawWyg1);
+			prawWyg1 = (prawWyg1 * (100 - prawDubla)) / 100;
+			//console.log("prawWyg1b", prawWyg1);
+
+			var zycieStart1 = zaw1.zycie;
+			var zycieStart2 = zaw2.zycie;
+			var zwyc1 = 0;
+			var zwyc2 = 0;
+			var duble = 0;
+			var przebieg = new Array();
+			while (zwyc1 < limitWyg && zwyc2 < limitWyg && zaw1.zycie > 0 && zaw2.zycie > 0) {
+
+				var rzut = random.integer(0, 100);
+				var res;
+				var res2 = {};
+				if (rzut <= prawDubla) {
+					res = "dubel";
+					res2.wynik = "d";
+					zaw1.zycie--;
+					zaw2.zycie--;
+					zaw1.duble++;
+					zaw2.duble++;
+					duble++;
+				} else if (rzut <= (prawDubla + prawWyg1)) {
+					res = "wyg 1";
+					res2.wynik = "1";
+					zwyc1++;
+					zaw2.zycie--;
+					zaw1.punkty++;
+				} else {
+					res = "wyg 2";
+					res2.wynik = "2";
+					zwyc2++;
+					zaw1.zycie--;
+					zaw2.punkty++;
+				}
+				zaw1.starcia++;
+				zaw2.starcia++;
+				sumaStarcWGrupie++;
+				res2.zwyc1 = zwyc1;
+				res2.zwyc2 = zwyc2;
+				res2.zycie1 = zaw1.zycie;
+				res2.zycie2 = zaw2.zycie;
+				przebieg.push(res2);
+				//console.log("rzut", rzut, res, "za1", zwyc1, zaw1.zycie, "za2", zwyc2, zaw2.zycie);
+			}
+			
+			var $przebiegTab = $("<table class='przebieg'><tr class='pr1'><td class='nazwa'>" + zaw1.nazwa + " (" + zycieStart1 +
+				" żyć)</td></tr><tr class='pr2'><td class='nazwa'>" + zaw2.nazwa + " (" + zycieStart2 + " żyć)</td></tr></table>");
+
+
+			var tr1 = $przebiegTab.find(".pr1");
+			var tr2 = $przebiegTab.find(".pr2");
+			for (var i = 0; i < przebieg.length; i++) {
+				//console.log("rows", tr1, tr2);
+				var pr = przebieg[i];
+				if (pr.wynik == "d") {
+					tr1.append($("<td class='dubel'>dubel</td>"));
+					tr2.append($("<td class='dubel'>dubel</td>"));
+				} else if (pr.wynik == "1") {
+					tr1.append($("<td class='punkt'>punkt</td>"));
+					tr2.append($("<td></td>"));
+				} else {
+					tr1.append($("<td></td>"));
+					tr2.append($("<td class='punkt'>punkt</td>"));
+				}
+
+				tr1.append($("<td class='stan'>punkty: " + pr.zwyc1 + " <br/>życia: " + pr.zycie1 + "</td>"));
+				tr2.append($("<td class='stan'>punkty: " + pr.zwyc2 + " <br/>życia: " + pr.zycie2 + "</td>"));
+			}
+			//console.log("po walce", zwyc1, zwyc2, duble, limitWyg);
+			if (zwyc1 == limitWyg && zwyc2 == 0 && duble == 0) {
+				zaw1.zycie++;
+
+				tr1.append($("<td class='bonus'><div class='heart'></div></td>"));
+
+				tr2.append($("<td></td>"));
+			}
+
+			if (zwyc2 == limitWyg && zwyc1 == 0 && duble == 0) {
+				zaw2.zycie++;
+				tr1.append($("<td></td>"));
+				tr2.append($("<td class='bonus'><div class='heart'></div></td>"));
+			}
+
+			tr1.append($("<td></td>"));
+			tr2.append($("<td></td>"));
+			$walkiCont.append($przebiegTab);
+		};
+
+
+		var zawodnicyBezPary = new Array();
+		var zawodnicyCzekajacy = new Array();
+		// najpierw zawodnicy, którzy czekali
+		for (var i2 = 0; i2 < 8; i2++) {
+			var zawodnik = zawodnicy[i2];
+			if (zawodnik.zycie > 0 && zawodnik.przeczekane > 0) {
+				zawodnicyCzekajacy.push(zawodnik);
+			}
+		}
+
+		zawodnicyCzekajacy.sort(function (z1, z2) {
+			if (z1.przeczekane > z2.przeczekane) {
+				return 1;
+			} else if (z1.przeczekane < z2.przeczekane) {
+				return -1;
+			} else {
+				return 0;
+			}
+		});
+
+		for (var i3 = 0; i3 < zawodnicyCzekajacy.length; i3++) {
+			var zawodnik = zawodnicyCzekajacy[i3];
+			if (czyWalczy(zawodnik.id) === false) {
+				var przeciwnik = znajdzPrzeciwnika(zawodnik.id, false);
+				if (przeciwnik != null) {
+					walkiKolejki.push({ zaw1: zawodnik.id, zaw2: przeciwnik.id });
+				} else {
+					zawodnicyBezPary.push(zawodnik);
+				}
+			}
+		}
+
+		var jestJuzBezPary = function (id) {
+			for (var zp = 0; zp < zawodnicyBezPary.length; zp++) {
+				if (zawodnicyBezPary[zp].id == id) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		for (var i = 0; i < 8; i++) {
+			var zawodnik = zawodnicy[i];
+			if (zawodnik.zycie > 0) {
+				if (czyWalczy(zawodnik.id) === false) {
+					var przeciwnik = znajdzPrzeciwnika(zawodnik.id, false);
+					if (przeciwnik != null) {
+						walkiKolejki.push({ zaw1: zawodnik.id, zaw2: przeciwnik.id });
+					} else {
+						if (jestJuzBezPary(zawodnik.id) == false) {
+							zawodnicyBezPary.push(zawodnik);
+						}
+					}
+				}
+			}
+		}
+		if (zawodnicyBezPary.length > 0) {
+			for(var t = 0; t < zawodnicyBezPary.length; t++) {
+				$walkiCont.append($("<br/><label class='bezPary'>Zawodnik bez nowego przeciwnika: " + zawodnicyBezPary[t].nazwa + "</label>"));
+			}
+
+			if (walkaPowtorna == true) {
+				for (var t3 = zawodnicyBezPary.length - 1; t3 >= 0; t3--) {
+					var zawodnik = zawodnicyBezPary[t3];
+					if (czyWalczy(zawodnik.id) === false) {
+						var przeciwnik = znajdzPrzeciwnika(zawodnik.id, true);
+						if (przeciwnik != null) {
+							walkiKolejki.push({ zaw1: zawodnik.id, zaw2: przeciwnik.id });
+
+							zawodnicyBezPary.splice(t3, 1);
+						}
+					}
+				}
+			} 
+
+			for (var t2 = 0; t2 < zawodnicyBezPary.length; t2++) {
+				zawodnicyBezPary[t2].przeczekane++;
+			}
+		}
+
+		for (var i = 0; i < walkiKolejki.length; i++) {
+			walkiGrupy.push({ zaw1: walkiKolejki[i].zaw1, zaw2: walkiKolejki[i].zaw2 });
+			walka(walkiKolejki[i], i + 1);
+		}
+
+		podsumowanieKolejki();
+	};
+
+	var pokazPodsumowanie = function () {
+		// czyszczenie tabelki
+		$(".podsumowanie").eq(rozgrywanaGrupa).empty();
+
+		var pods = $("<table class='podsumowanieWalki'><tr><th>zawodnik</th><th>życia</th><th>pkt-dub</th><th>punkty</th><th>duble</th><th>starcia</th></table>");
+		for (var i = 0; i < zawodnicy.length; i++) {
+			var isWinner = zawodnicy[i].zycie > 0;
+
+			var className = "nazwaOst " + (isWinner ? "zwyciezca" : "")
+			var row = $("<tr><td class='" + className + "' punkty='" + zawodnicy[i].punkty + "' duble='" + zawodnicy[i].duble + "'>" + zawodnicy[i].nazwa
+				+ "</td><td class='zycie'>" + zawodnicy[i].zycie + "</td><td class='pkntDub'>" + (zawodnicy[i].punkty - zawodnicy[i].duble) + "</td><td class='punkty'>"
+				+ zawodnicy[i].punkty + "</td><td>" + zawodnicy[i].duble + "</td><td>" + zawodnicy[i].starcia + "</td></tr>");
+
+			
+			pods.append(row);
+		}
+
+
+		$(".podsumowanie").eq(rozgrywanaGrupa).append($("<h3>Podsumowanie grupy " + (rozgrywanaGrupa + 1) + "</h3><br/>"));
+		$(".podsumowanie").eq(rozgrywanaGrupa).append(pods);
+		$(".podsumowanie").eq(rozgrywanaGrupa).append($("<div style='margin-top: 5px; padding-left: 5px'>Ilość kolejek: " + liczbaKolejek + "</div>"));
+		$(".podsumowanie").eq(rozgrywanaGrupa).append($("<div style='padding-left: 5px'>Łącznie starć: " + sumaStarcWGrupie + "</div>"));
+		$(".podsumowanie").eq(rozgrywanaGrupa).append($("<div style='padding-left: 5px'>Łączny czas: " + (Math.ceil(sumaStarcWGrupie / 2)) + " minut</div>"));
+
+	};
+</script>

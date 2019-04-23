@@ -1,0 +1,156 @@
+﻿<style>
+	td img {
+		width: 100%;
+		display: none;
+	}
+
+	table {
+		width: calc(100%);
+	}
+</style>
+<input type="button" value="⚔️ Odkryj swoje przeznaczenie ⚔️" id="getWeapons" style="width:420px; height: 70px; max-width: 1000px; font-size: 18pt"/>
+
+<table >
+	<tr>
+		<td id="w1" style="width: 50%">
+			&nbsp;
+			<img src="~/Content/weaponmaster/axe.jpg" class="axe"  />
+			<img src="~/Content/weaponmaster/buckler.jpg" class="buckler"  />
+			<img src="~/Content/weaponmaster/dagger.jpg" class="dagger"  />
+			<img src="~/Content/weaponmaster/katana.jpg" class="katana"  />
+			<img src="~/Content/weaponmaster/longsword.jpg" class="longsword"  />
+			<img src="~/Content/weaponmaster/messer.jpg" class="messer"  />
+			<img src="~/Content/weaponmaster/sabre.jpg" class="sabre"  />
+		</td>
+		<td id="w2" style="width: 50%">
+			&nbsp;
+			<img src="~/Content/weaponmaster/axe.jpg" class="axe"  />
+			<img src="~/Content/weaponmaster/buckler.jpg" class="buckler"  />
+			<img src="~/Content/weaponmaster/dagger.jpg" class="dagger"  />
+			<img src="~/Content/weaponmaster/katana.jpg" class="katana"  />
+			<img src="~/Content/weaponmaster/longsword.jpg" class="longsword"  />
+			<img src="~/Content/weaponmaster/messer.jpg" class="messer"  />
+			<img src="~/Content/weaponmaster/sabre.jpg" class="sabre"  />
+		</td>
+	</tr>
+</table>
+<script>
+	var random = new Random(Random.engines.mt19937().autoSeed());
+	var $w1 = $("#w1 img");
+	var $w2 = $("#w2 img");
+	var imgCount = $("#w1 img").length;
+	var weapons =
+	{
+		axe: 'axe',
+		buckler: 'buckler',
+		dagger: 'dagger',
+		katana: 'katana',
+		longsword: 'longsword',
+		messer: 'messer',
+		sabre: 'sabre',
+		empty: null
+	};
+	var combinations = [];
+	combinations.push({ w1: weapons.axe, w2: weapons.axe });
+	combinations.push({ w1: weapons.axe, w2: weapons.buckler });
+	combinations.push({ w1: weapons.axe, w2: weapons.dagger });
+	combinations.push({ w1: weapons.axe, w2: weapons.katana });
+	combinations.push({ w1: weapons.axe, w2: weapons.messer });
+	combinations.push({ w1: weapons.axe, w2: weapons.sabre });
+	combinations.push({ w1: weapons.axe, w2: weapons.empty, prob: 6 })
+	combinations.push({ w1: weapons.sabre, w2: weapons.buckler });
+	combinations.push({ w1: weapons.sabre, w2: weapons.dagger });
+	combinations.push({ w1: weapons.sabre, w2: weapons.katana });
+	combinations.push({ w1: weapons.sabre, w2: weapons.messer });
+	combinations.push({ w1: weapons.sabre, w2: weapons.sabre });
+	combinations.push({ w1: weapons.sabre, w2: weapons.empty, prob: 6 });
+	combinations.push({ w1: weapons.katana, w2: weapons.buckler });
+	combinations.push({ w1: weapons.katana, w2: weapons.dagger });
+	combinations.push({ w1: weapons.katana, w2: weapons.messer });
+	combinations.push({ w1: weapons.katana, w2: weapons.empty, prob: 6 });
+	combinations.push({ w1: weapons.messer, w2: weapons.buckler });
+	combinations.push({ w1: weapons.messer, w2: weapons.dagger });
+	combinations.push({ w1: weapons.messer, w2: weapons.messer });
+	combinations.push({ w1: weapons.messer, w2: weapons.empty, prob: 6 });
+	combinations.push({ w1: weapons.dagger, w2: weapons.buckler });
+	combinations.push({ w1: weapons.dagger, w2: weapons.dagger });
+	combinations.push({ w1: weapons.dagger, w2: weapons.empty, prob: 4 });
+	combinations.push({ w1: weapons.longsword, w2: weapons.dagger });
+	combinations.push({ w1: weapons.longsword, w2: weapons.buckler });
+	combinations.push({ w1: weapons.longsword, w2: weapons.longsword });
+	combinations.push({ w1: weapons.longsword, w2: weapons.empty, prob: 6 });
+
+	var combinationsToPick = [];
+	var rzut = 0;
+	function pick() {
+		$(this).css("visibility", "hidden");
+		rzut = random.integer(0, combinationsToPick.length - 1);
+		//console.log("picked", combinationsToPick[rzut]);
+		animate();
+	};
+
+	function animate() {
+		show(1, 100);
+		show(2, 100);
+	};
+
+	function show(el, time) {
+		var $el = el == 1 ? $w1 : $w2;
+		$el.hide();
+
+		var num = random.integer(0, $el.length);
+		if (num < $el.length) {
+			$el.eq(num).show();
+		}
+		if (time <= 700) {
+			var newTime;
+			if (time < 200) {
+				newTime = time + 10;
+			} else if (time < 300) {
+				newTime = time + 50;
+			} else if (time < 400) {
+				newTime = time + 150;
+			}else {
+				newTime = time + 300;
+			}
+			
+
+			setTimeout(function () {
+				show(el, newTime);
+			}, time);
+		} else {
+			var cmb = combinationsToPick[rzut];
+			var $img;
+			if (el == 1) {
+				$img = $el.filter("." + cmb.w1);
+				$w1.hide();
+			} else {
+				$img = $el.filter("." + cmb.w2);
+				$w2.hide();
+			}
+
+			$img.show();
+			$("#getWeapons").css("visibility","visible");
+		}
+	}
+
+	function setup() {
+		for (var i = 0; i < combinations.length; i++) {
+			if (combinations[i].prob) {
+				for (var j = 0; j < combinations[i].prob; j++) {
+					combinationsToPick.push(combinations[i]);
+				}
+			} else {
+				combinationsToPick.push(combinations[i]);
+			}
+		}
+	}
+
+	$(function () {
+		setup();
+		$("#getWeapons").on("click", pick);
+		$("hr").hide();
+
+	});
+	
+</script>
